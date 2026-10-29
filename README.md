@@ -1,2 +1,11 @@
 # SD-ROS-ROVER
 Create two ROS rover to perform autonomous evaluations of highway bridges
+
+
+#  Abstract
+
+Modern bridge inspection and structural health monitoring practices often rely on fixed sensor installations and manual inspections, which can be costly, labor-intensive, and difficult to maintain over the lifespan of the infrastructure. The deployment and maintenance of permanently installed sensing systems on highway bridges represent a significant barrier to widespread monitoring. To address these challenges, this senior design project presents the design and development of a cooperative two-rover system for vibration-based bridge health monitoring. By utilizing mobile sensing and excitation platforms, the proposed approach eliminates the need for permanent sensor installation while enabling rapid and repeatable structural assessments.
+
+The system consists of two autonomous ground rovers operating within a unified Robot Operating System (ROS 2) framework. Both rovers employ LiDAR and vision-based Simultaneous Localization and Mapping (SLAM) algorithms to navigate bridge environments, generate spatial maps, and localize themselves within a shared coordinate frame. One rover serves as a mobile sensing platform equipped with acceleration measurement hardware, while the second rover functions as an active excitation unit carrying a custom-designed shaker mechanism. The shaker utilizes a brushless DC (BLDC) torque motor coupled with an eccentric mass to generate controlled vibrational inputs to the bridge structure.
+
+The project focuses on three primary design challenges: the development and implementation of robust LiDAR- and vision-based SLAM algorithms for autonomous navigation, the creation of collaborative control and communication strategies between the two rovers, and the mechanical design and optimization of the vibration excitation system. Through coordinated operation, the shaker rover can position itself at designated locations to introduce controlled dynamic loading, while the sensing rover autonomously relocates to measure structural responses and collect vibration data.
