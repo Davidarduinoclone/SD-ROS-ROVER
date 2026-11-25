@@ -64,15 +64,21 @@ RUN ARCH="$(dpkg --print-architecture)" \
 # ---------------------------------------------------------------------------
 # KasmVNC (latest release, native architecture)
 # ---------------------------------------------------------------------------
+# Asks GitHub for the release's real file list and picks the Ubuntu-jammy .deb
+# for this CPU, so it keeps working if KasmVNC changes its file naming.
 RUN ARCH="$(dpkg --print-architecture)" \
- && VER="${KASMVNC_VERSION}" \
- && if [ "$VER" = "latest" ]; then \
-      VER="$(curl -fsSL https://api.github.com/repos/kasmtech/KasmVNC/releases/latest \
-             | grep -oP '"tag_name":\s*"v\K[^"]+')"; \
+ && if [ "${KASMVNC_VERSION}" = "latest" ]; then \
+      API="https://api.github.com/repos/kasmtech/KasmVNC/releases/latest"; \
+    else \
+      API="https://api.github.com/repos/kasmtech/KasmVNC/releases/tags/v${KASMVNC_VERSION}"; \
     fi \
- && echo "Installing KasmVNC ${VER} (${ARCH})" \
- && curl -fL -o /tmp/kasmvnc.deb \
-      "https://github.com/kasmtech/KasmVNC/releases/download/v${VER}/kasmvncserver_jammy_${VER}_${ARCH}.deb" \
+ && ASSETS="$(curl -fsSL "$API" | grep -oP '"browser_download_url":\s*"\K[^"]+\.deb')" \
+ && URL="$(echo "$ASSETS" | grep -i 'jammy' | grep -E "_${ARCH}\.deb$" | head -n1 || true)" \
+ && if [ -z "$URL" ]; then \
+      echo "No jammy/${ARCH} KasmVNC package found. Available .deb files:"; echo "$ASSETS"; exit 1; \
+    fi \
+ && echo "Installing KasmVNC from ${URL}" \
+ && curl -fL -o /tmp/kasmvnc.deb "$URL" \
  && apt-get update \
  && apt-get install -y /tmp/kasmvnc.deb \
  && rm -rf /tmp/kasmvnc.deb /var/lib/apt/lists/*
