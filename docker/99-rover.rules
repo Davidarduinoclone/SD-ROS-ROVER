@@ -1,0 +1,20 @@
+# Install ON THE RASPBERRY PI (the host), not inside the container:
+#   sudo cp 99-rover.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# Find the values for each device with:
+#   udevadm info -a -n /dev/ttyUSB0 | grep -E 'idVendor|idProduct|serial|KERNELS'
+#
+# Many ESP32 boards use a CP2102 (10c4:ea60) – the SAME chip as the RPLidar adapter.
+# Vendor/product IDs alone can't tell them apart, so match the serial number
+# (CP210x chips have one) or, failing that, the physical USB port (KERNELS).
+
+# ESP32 motor controller – match by serial number (replace XXXX)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="XXXX", GROUP="dialout", MODE="0660", SYMLINK+="esp32"
+
+# RPLidar – match by serial number (replace YYYY)
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="YYYY", GROUP="dialout", MODE="0660", SYMLINK+="rplidar"
+
+# CH340 boards (1a86:7523) have NO serial number – bind to the physical port instead.
+# Get KERNELS with: udevadm info -a -n /dev/ttyUSB0 | grep KERNELS   (use the first "1-1.x" style value)
+# SUBSYSTEM=="tty", KERNELS=="1-1.2", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", GROUP="dialout", MODE="0660", SYMLINK+="esp32"
