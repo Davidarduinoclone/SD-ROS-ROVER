@@ -10,7 +10,7 @@
 # (CP210x chips have one) or, failing that, the physical USB port (KERNELS).
 
 # ESP32 motor controller – match by serial number (replace XXXX)
-SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="XXXX", GROUP="dialout", MODE="0660", SYMLINK+="esp32"
+SUBSYSTEM=="tty", KERNELS=="1-1.1", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", GROUP="dialout", MODE="0660", SYMLINK+="esp32"
 
 # RPLidar – match by serial number (replace YYYY)
 SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", ATTRS{serial}=="YYYY", GROUP="dialout", MODE="0660", SYMLINK+="rplidar"
