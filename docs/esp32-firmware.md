@@ -280,6 +280,25 @@ The **first build takes several minutes.** PlatformIO downloads micro-ROS and co
 
 The micro-ROS build needs `git` and an internet connection, and it uses Python packages that it installs into PlatformIO's own environment. The PlatformIO VS Code extension sets that environment up automatically. A firmware build currently uses about 14% of RAM and 29% of flash, which leaves plenty of room for more modules.
 
+### Building on Windows
+
+micro_ros_platformio **does not build on native Windows**. Its build script runs Linux shell commands, and fails with:
+
+```
+Build dev micro-ROS environment failed:
+ '.' is not recognized as an internal or external command
+```
+
+Build from Linux instead, using one of these:
+
+- **WSL 2** on the Windows PC:
+  1. `wsl --install -d Ubuntu-22.04`
+  2. In Ubuntu: `sudo apt install -y git cmake build-essential python3-venv python3-pip`
+  3. Open the project in VS Code with the **WSL** extension and install the PlatformIO extension inside WSL.
+  
+  Keep the repo in the Linux file system (`~/...`, not `/mnt/c/...`). To flash, attach the ESP32's USB port to WSL with [usbipd-win](https://github.com/dorssel/usbipd-win): `usbipd bind --busid <id>` once, then `usbipd attach --wsl --busid <id>`. The ESP32 appears as `/dev/ttyUSB0` (add yourself to `dialout` if you get permission denied).
+- **The rover's Docker container** (Linux, ESP32 already at `/dev/esp32`), once PlatformIO is installed in the image with its official installer. A plain `pip install platformio` doesn't work: micro-ROS needs PlatformIO's own `penv` environment, which also needs `python3-venv`.
+
 **No serial monitor or `Serial.print`.** The USB serial port carries the micro-ROS stream, and any text printed to it corrupts that stream. Use the status LED, or publish debug values on a topic. (`CORE_DEBUG_LEVEL=0` in `platformio.ini` keeps the Arduino core's own log messages off the port for the same reason.)
 
 The agent and the flasher can't use the port at the same time. **Stop the agent before uploading.**
