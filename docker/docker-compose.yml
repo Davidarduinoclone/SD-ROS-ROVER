@@ -1,0 +1,25 @@
+# Run on the Raspberry Pi with:   docker compose up -d --build
+services:
+  rover:
+    image: rover-dev:latest
+    container_name: rover
+    restart: unless-stopped
+
+    # --- Same network as the host ----------------------------------------
+    network_mode: host      # container uses the Pi's IP and ports directly
+    ipc: host               # lets DDS shared-memory transport work with ROS nodes on the host / other containers
+    
+    privileged: true
+
+    environment:
+      - PASSWORD=change-me  # code-server + VNC password
+      - ROS_DOMAIN_ID=0
+
+    volumes:
+      - ./program:/home/robot/program   # your code + code-server settings persist here
+      # --- USB devices -----------------------------------------------------
+      # Share the host's /dev so udev symlinks (/dev/esp32, /dev/rplidar ...)
+      # appear inside the container and survive unplug/replug.
+      - /dev:/dev
+      - /run/udev:/run/udev:ro
+
